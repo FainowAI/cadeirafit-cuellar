@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, MessageCircle, Mail, Star, CheckCircle } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Mail, Star, CheckCircle, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import categorias from '../data/categorias.json';
+import { avisaApi } from '../services/avisaApi';
+import { formatarMensagemWhatsApp, formatarMensagemResumida } from '../utils/whatsappMessage';
 
 interface ResultadoProps {
   form: UseFormReturn<any>;
@@ -116,28 +118,91 @@ const salvarNoSupabase = (dados: any, recomendacoes: Recomendacao[]) => {
 export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart }) => {
   const dados = form.getValues();
   const recomendacoes = gerarRecomendacoes(dados);
+  const [isEnviandoWhatsApp, setIsEnviandoWhatsApp] = useState(false);
+  const [isEnviandoEmail, setIsEnviandoEmail] = useState(false);
   
-  const handleEnviarProposta = () => {
-    // Simular envio
-    criarLeadKommo(dados, recomendacoes);
-    salvarNoSupabase(dados, recomendacoes);
+  const handleEnviarPropostaWhatsApp = async () => {
+    if (!dados.telefone) {
+      toast({
+        title: "Telefone não encontrado",
+        description: "Por favor, volte e preencha seus dados completos.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsEnviandoWhatsApp(true);
     
-    // Exibir dados no console (MVP)
-    const resultData = {
-      lead: dados,
-      recomendacoes: recomendacoes.map(r => ({
-        categoria: r.categoria.rotulo,
-        prioridade: r.prioridade,
-        motivo: r.motivo
-      }))
-    };
+    try {
+      // Salvar dados no sistema
+      criarLeadKommo(dados, recomendacoes);
+      salvarNoSupabase(dados, recomendacoes);
+      
+      // Enviar mensagem para o cliente
+      const mensagemCliente = formatarMensagemWhatsApp(dados, recomendacoes);
+      const resultadoCliente = await avisaApi.sendMessage(dados.telefone, mensagemCliente);
+      
+      if (resultadoCliente.success) {
+        // Enviar notificação para a equipe (opcional)
+        const mensagemEquipe = formatarMensagemResumida(dados, recomendacoes);
+        // Você pode adicionar um número da equipe aqui
+        // await avisaApi.sendMessage('5511999999999', mensagemEquipe);
+        
+        toast({
+          title: "Mensagem enviada com sucesso!",
+          description: "Verifique seu WhatsApp para receber as recomendações.",
+        });
+        
+        console.log('📱 WhatsApp enviado:', resultadoCliente.data);
+      } else {
+        throw new Error(resultadoCliente.message);
+      }
+    } catch (error) {
+      console.error('Erro ao enviar WhatsApp:', error);
+      toast({
+        title: "Erro ao enviar mensagem",
+        description: "Tente novamente ou entre em contato conosco.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsEnviandoWhatsApp(false);
+    }
+  };
+
+  const handleEnviarPropostaEmail = async () => {
+    setIsEnviandoEmail(true);
     
-    console.log('📋 Dados do Lead + Recomendação:', JSON.stringify(resultData, null, 2));
-    
-    toast({
-      title: "Proposta enviada com sucesso!",
-      description: "Em breve nossa equipe entrará em contato com você.",
-    });
+    try {
+      // Simular envio por email (implementar integração futura)
+      criarLeadKommo(dados, recomendacoes);
+      salvarNoSupabase(dados, recomendacoes);
+      
+      // Exibir dados no console (MVP)
+      const resultData = {
+        lead: dados,
+        recomendacoes: recomendacoes.map(r => ({
+          categoria: r.categoria.rotulo,
+          prioridade: r.prioridade,
+          motivo: r.motivo
+        }))
+      };
+      
+      console.log('📋 Dados do Lead + Recomendação:', JSON.stringify(resultData, null, 2));
+      
+      toast({
+        title: "Proposta enviada com sucesso!",
+        description: "Em breve nossa equipe entrará em contato com você.",
+      });
+    } catch (error) {
+      console.error('Erro ao enviar email:', error);
+      toast({
+        title: "Erro ao enviar proposta",
+        description: "Tente novamente ou entre em contato conosco.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsEnviandoEmail(false);
+    }
   };
 
   const getPrioridadeColor = (prioridade: string) => {
@@ -210,14 +275,33 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
               Nossa equipe pode elaborar uma proposta personalizada com preços especiais.
             </p>
             
-            <div className="flex justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
-                onClick={handleEnviarProposta}
+                onClick={handleEnviarPropostaWhatsApp}
+                disabled={isEnviandoWhatsApp || isEnviandoEmail}
                 className="bg-green-600 hover:bg-green-700 text-white"
                 size="lg"
               >
-                <MessageCircle className="h-5 w-5 mr-2" />
-                Receber no WhatsApp
+                {isEnviandoWhatsApp ? (
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                ) : (
+                  <MessageCircle className="h-5 w-5 mr-2" />
+                )}
+                {isEnviandoWhatsApp ? 'Enviando...' : 'Receber no WhatsApp'}
+              </Button>
+              
+              <Button 
+                onClick={handleEnviarPropostaEmail}
+                disabled={isEnviandoWhatsApp || isEnviandoEmail}
+                variant="outline"
+                size="lg"
+              >
+                {isEnviandoEmail ? (
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                ) : (
+                  <Mail className="h-5 w-5 mr-2" />
+                )}
+                {isEnviandoEmail ? 'Enviando...' : 'Receber por E-mail'}
               </Button>
             </div>
           </div>
