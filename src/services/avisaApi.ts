@@ -11,16 +11,21 @@ interface AvisaApiResponse {
 }
 
 class AvisaApiService {
-  private readonly baseUrl = 'https://api.avisa.ai';
+  private readonly baseUrl = 'https://api.avisa.ai/v1';
   private readonly token: string;
 
   constructor(token: string) {
     this.token = token;
+    console.log('🔧 AvisaAPI inicializada com token:', token.substring(0, 10) + '...');
   }
 
   private async makeRequest(endpoint: string, data: any): Promise<AvisaApiResponse> {
+    const url = `${this.baseUrl}${endpoint}`;
+    console.log('📡 Fazendo requisição para:', url);
+    console.log('📤 Dados enviados:', data);
+    
     try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,10 +34,14 @@ class AvisaApiService {
         body: JSON.stringify(data),
       });
 
+      console.log('📥 Status da resposta:', response.status);
+      console.log('📥 Headers da resposta:', Object.fromEntries(response.headers.entries()));
+
       const result = await response.json();
+      console.log('📥 Resposta da API:', result);
 
       if (!response.ok) {
-        throw new Error(result.message || 'Erro na requisição para AvisaAPI');
+        throw new Error(result.message || `Erro HTTP ${response.status}: ${response.statusText}`);
       }
 
       return {
@@ -40,7 +49,7 @@ class AvisaApiService {
         data: result,
       };
     } catch (error) {
-      console.error('Erro na AvisaAPI:', error);
+      console.error('❌ Erro na AvisaAPI:', error);
       return {
         success: false,
         message: error instanceof Error ? error.message : 'Erro desconhecido',
@@ -49,12 +58,15 @@ class AvisaApiService {
   }
 
   async sendMessage(phone: string, message: string): Promise<AvisaApiResponse> {
+    console.log('📱 Enviando mensagem para:', phone);
+    console.log('💬 Mensagem:', message.substring(0, 100) + '...');
+    
     const messageData: AvisaApiMessage = {
       phone: this.formatPhone(phone),
       message,
     };
 
-    return this.makeRequest('/send-message', messageData);
+    return this.makeRequest('/messages/send', messageData);
   }
 
   async sendTemplateMessage(phone: string, templateName: string, variables: Record<string, string>): Promise<AvisaApiResponse> {
@@ -64,27 +76,39 @@ class AvisaApiService {
       variables,
     };
 
-    return this.makeRequest('/send-template', messageData);
+    return this.makeRequest('/messages/template', messageData);
   }
 
   private formatPhone(phone: string): string {
     // Remove todos os caracteres não numéricos
     const numbers = phone.replace(/\D/g, '');
+    console.log('📞 Telefone original:', phone, '-> Formatado:', numbers);
     
     // Adiciona código do país se não estiver presente
     if (numbers.length === 11 && numbers.startsWith('0')) {
-      return `55${numbers.substring(1)}`;
+      const formatted = `55${numbers.substring(1)}`;
+      console.log('📞 Telefone final:', formatted);
+      return formatted;
     }
     
     if (numbers.length === 11) {
-      return `55${numbers}`;
+      const formatted = `55${numbers}`;
+      console.log('📞 Telefone final:', formatted);
+      return formatted;
     }
     
+    console.log('📞 Telefone final:', numbers);
     return numbers;
   }
 
   async checkStatus(messageId: string): Promise<AvisaApiResponse> {
-    return this.makeRequest('/message-status', { messageId });
+    return this.makeRequest('/messages/status', { messageId });
+  }
+
+  // Método para testar a conexão
+  async testConnection(): Promise<AvisaApiResponse> {
+    console.log('🧪 Testando conexão com AvisaAPI...');
+    return this.makeRequest('/health', {});
   }
 }
 

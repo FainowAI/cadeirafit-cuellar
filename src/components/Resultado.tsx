@@ -140,6 +140,8 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
       
       // Enviar mensagem para o cliente
       const mensagemCliente = formatarMensagemWhatsApp(dados, recomendacoes);
+      console.log('📤 Tentando enviar mensagem via AvisaAPI...');
+      
       const resultadoCliente = await avisaApi.sendMessage(dados.telefone, mensagemCliente);
       
       if (resultadoCliente.success) {
@@ -155,7 +157,8 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
         
         console.log('📱 WhatsApp enviado:', resultadoCliente.data);
       } else {
-        throw new Error(resultadoCliente.message);
+        console.error('❌ Erro na AvisaAPI:', resultadoCliente.message);
+        throw new Error(`Erro na API: ${resultadoCliente.message}`);
       }
     } catch (error) {
       console.error('Erro ao enviar WhatsApp:', error);
