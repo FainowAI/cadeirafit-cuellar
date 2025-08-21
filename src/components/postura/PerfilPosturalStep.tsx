@@ -11,7 +11,7 @@ import { ImageModal } from './ImageModal';
 // Importar as imagens geradas
 const equilibradoImg = '/images/perfis/equilibrado.png';
 const lordoseImg = '/images/perfis/lordose-acentuada.png';
-const cifoseImg = '/images/perfis/cifose-acentuada.png';
+const cifoseImg = '/images/perfis/cifose-acentuada.jpg';
 const assimetriaImg = '/images/perfis/assimetria-leve.png';
 
 interface PerfilPosturalStepProps {
