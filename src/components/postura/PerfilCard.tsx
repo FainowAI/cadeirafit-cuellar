@@ -30,7 +30,7 @@ export const PerfilCard: React.FC<PerfilCardProps> = ({
       <label
         htmlFor={id}
         className={cn(
-          "block cursor-pointer rounded-lg border-2 p-4 transition-all duration-200",
+          "block cursor-pointer rounded-lg border-2 p-6 transition-all duration-200",
           "hover:border-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
           isSelected 
             ? "border-accent bg-accent/5 shadow-md" 
@@ -39,7 +39,7 @@ export const PerfilCard: React.FC<PerfilCardProps> = ({
         onClick={() => onSelect(id)}
       >
         <div className="flex flex-col items-center text-center">
-          <div className="w-24 h-24 flex-shrink-0 bg-muted rounded-lg overflow-hidden mb-3">
+          <div className="w-48 h-48 md:w-72 md:h-72 flex-shrink-0 bg-muted rounded-lg overflow-hidden mb-4">
             <img
               src={imageUrl}
               alt={`Ilustração de coluna com ${label.toLowerCase()}`}
