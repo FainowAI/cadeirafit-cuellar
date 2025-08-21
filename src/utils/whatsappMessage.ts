@@ -69,12 +69,49 @@ export const formatarMensagemWhatsApp = (dados: DadosUsuario, recomendacoes: Rec
   mensagem += `• Entrega e instalação inclusas\n`;
   mensagem += `• Garantia estendida\n\n`;
   
+  mensagem += `🌐 *Conheça mais sobre nossas cadeiras:*\n`;
+  mensagem += `Site: https://www.cuellarmoveis.com.br/cadeira\n\n`;
+  
   mensagem += `📞 *Contato:*\n`;
   mensagem += `• WhatsApp: (11) 99999-9999\n`;
   mensagem += `• Email: contato@cuellar.com.br\n`;
   mensagem += `• Horário: Seg-Sex, 8h às 18h\n\n`;
   
   mensagem += `*Cuellar Móveis - Ergonomia que transforma seu trabalho!* 🪑✨`;
+  
+  return mensagem;
+};
+
+// Função para criar mensagem específica para cada cadeira individual
+export const formatarMensagemCadeiraIndividual = (dados: DadosUsuario, cadeira: Recomendacao): string => {
+  let mensagem = `*Olá ${dados.nome}! 👋*\n\n`;
+  mensagem += `Baseado no seu perfil, recomendamos especialmente a *${cadeira.categoria.rotulo}*!\n\n`;
+  
+  mensagem += `📝 *Sobre esta cadeira:*\n`;
+  mensagem += `${cadeira.categoria.descricao}\n\n`;
+  
+  mensagem += `💡 *Por que é ideal para você:*\n`;
+  mensagem += `${cadeira.motivo}\n\n`;
+  
+  mensagem += `✨ *Principais recursos:*\n`;
+  cadeira.categoria.recursos.slice(0, 4).forEach(recurso => {
+    mensagem += `• ${recurso}\n`;
+  });
+  
+  mensagem += `\n🎁 *Oferta especial para você:*\n`;
+  mensagem += `• Consultoria ergonômica gratuita\n`;
+  mensagem += `• Desconto exclusivo\n`;
+  mensagem += `• Entrega e instalação inclusas\n`;
+  mensagem += `• Garantia estendida\n\n`;
+  
+  mensagem += `🌐 *Conheça mais detalhes:*\n`;
+  mensagem += `Site: https://www.cuellarmoveis.com.br/cadeira\n\n`;
+  
+  mensagem += `📞 *Entre em contato agora:*\n`;
+  mensagem += `WhatsApp: (11) 99999-9999\n`;
+  mensagem += `Email: contato@cuellar.com.br\n\n`;
+  
+  mensagem += `*Cuellar Móveis - Transformando seu ambiente de trabalho!* 🪑✨`;
   
   return mensagem;
 };

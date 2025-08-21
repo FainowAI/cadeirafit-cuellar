@@ -7,7 +7,7 @@ import { ArrowLeft, MessageCircle, Star, CheckCircle, Loader2 } from 'lucide-rea
 import { toast } from '@/hooks/use-toast';
 import categorias from '../data/categorias.json';
 import { avisaApi } from '../services/avisaApi';
-import { formatarMensagemWhatsApp, formatarMensagemResumida } from '../utils/whatsappMessage';
+import { formatarMensagemWhatsApp, formatarMensagemResumida, formatarMensagemCadeiraIndividual } from '../utils/whatsappMessage';
 
 interface ResultadoProps {
   form: UseFormReturn<any>;
@@ -137,27 +137,37 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
       criarLeadKommo(dados, recomendacoes);
       salvarNoSupabase(dados, recomendacoes);
       
-      // Enviar mensagem para o cliente
-      const mensagemCliente = formatarMensagemWhatsApp(dados, recomendacoes);
-      console.log('📤 Tentando enviar mensagem via AvisaAPI...');
+      console.log('📤 Tentando enviar mensagens via AvisaAPI...');
       
-      const resultadoCliente = await avisaApi.sendMessage(dados.telefone, mensagemCliente);
+      // Enviar uma mensagem para cada cadeira recomendada
+      const resultados = [];
       
-      if (resultadoCliente.success) {
-        // Enviar notificação para a equipe (opcional)
-        const mensagemEquipe = formatarMensagemResumida(dados, recomendacoes);
-        // Você pode adicionar um número da equipe aqui
-        // await avisaApi.sendMessage('5511999999999', mensagemEquipe);
+      for (const [index, cadeira] of recomendacoes.entries()) {
+        const mensagemCadeira = formatarMensagemCadeiraIndividual(dados, cadeira);
+        console.log(`📤 Enviando mensagem ${index + 1}/${recomendacoes.length} para cadeira: ${cadeira.categoria.rotulo}`);
         
+        const resultado = await avisaApi.sendMessage(dados.telefone, mensagemCadeira);
+        resultados.push(resultado);
+        
+        // Aguardar um pouco entre as mensagens para evitar spam
+        if (index < recomendacoes.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+      }
+      
+      // Verificar se pelo menos uma mensagem foi enviada com sucesso
+      const sucessos = resultados.filter(r => r.success);
+      
+      if (sucessos.length > 0) {
         toast({
-          title: "Mensagem enviada com sucesso!",
-          description: "Verifique seu WhatsApp para receber as recomendações.",
+          title: "Mensagens enviadas com sucesso!",
+          description: `${sucessos.length} mensagem(ns) enviada(s). Verifique seu WhatsApp para receber as recomendações.`,
         });
         
-        console.log('📱 WhatsApp enviado:', resultadoCliente.data);
+        console.log('📱 WhatsApp enviado:', sucessos);
       } else {
-        console.error('❌ Erro na AvisaAPI:', resultadoCliente.message);
-        throw new Error(`Erro na API: ${resultadoCliente.message}`);
+        const primeiroErro = resultados.find(r => !r.success);
+        throw new Error(`Erro na API: ${primeiroErro?.message || 'Erro desconhecido'}`);
       }
     } catch (error) {
       console.error('Erro ao enviar WhatsApp:', error);

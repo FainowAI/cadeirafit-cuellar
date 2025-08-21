@@ -1,7 +1,6 @@
 interface AvisaApiMessage {
-  phone: string;
+  number: string;
   message: string;
-  instance?: string;
 }
 
 interface AvisaApiResponse {
@@ -11,7 +10,7 @@ interface AvisaApiResponse {
 }
 
 class AvisaApiService {
-  private readonly baseUrl = 'https://api.avisa.ai/v1';
+  private readonly baseUrl = 'https://www.avisaapi.com.br/api/actions';
   private readonly token: string;
 
   constructor(token: string) {
@@ -62,11 +61,11 @@ class AvisaApiService {
     console.log('💬 Mensagem:', message.substring(0, 100) + '...');
     
     const messageData: AvisaApiMessage = {
-      phone: this.formatPhone(phone),
+      number: this.formatPhone(phone),
       message,
     };
 
-    return this.makeRequest('/messages/send', messageData);
+    return this.makeRequest('/sendMessage', messageData);
   }
 
   async sendTemplateMessage(phone: string, templateName: string, variables: Record<string, string>): Promise<AvisaApiResponse> {
@@ -82,23 +81,33 @@ class AvisaApiService {
   private formatPhone(phone: string): string {
     // Remove todos os caracteres não numéricos
     const numbers = phone.replace(/\D/g, '');
-    console.log('📞 Telefone original:', phone, '-> Formatado:', numbers);
+    console.log('📞 Telefone original:', phone, '-> Números apenas:', numbers);
     
-    // Adiciona código do país se não estiver presente
-    if (numbers.length === 11 && numbers.startsWith('0')) {
-      const formatted = `55${numbers.substring(1)}`;
-      console.log('📞 Telefone final:', formatted);
-      return formatted;
+    let formatted = numbers;
+    
+    // Se começa com 0, remove o 0 (código de área antigo)
+    if (numbers.startsWith('0') && numbers.length === 12) {
+      formatted = numbers.substring(1);
     }
     
-    if (numbers.length === 11) {
-      const formatted = `55${numbers}`;
-      console.log('📞 Telefone final:', formatted);
-      return formatted;
+    // Se tem 11 dígitos (DDD + celular com 9), adiciona 55
+    if (formatted.length === 11) {
+      formatted = `55${formatted}`;
+    }
+    // Se tem 10 dígitos (DDD + fixo), adiciona 55
+    else if (formatted.length === 10) {
+      formatted = `55${formatted}`;
+    }
+    // Se já tem 13 dígitos (55 + DDD + número), mantém
+    else if (formatted.length === 13) {
+      // Verifica se já começa com 55
+      if (!formatted.startsWith('55')) {
+        formatted = `55${formatted}`;
+      }
     }
     
-    console.log('📞 Telefone final:', numbers);
-    return numbers;
+    console.log('📞 Telefone final:', formatted);
+    return formatted;
   }
 
   async checkStatus(messageId: string): Promise<AvisaApiResponse> {
