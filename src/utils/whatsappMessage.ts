@@ -73,8 +73,7 @@ export const formatarMensagemWhatsApp = (dados: DadosUsuario, recomendacoes: Rec
   mensagem += `Site: https://www.cuellarmoveis.com.br/cadeira\n\n`;
   
   mensagem += `📞 *Contato:*\n`;
-  mensagem += `• WhatsApp: (11) 99999-9999\n`;
-  mensagem += `• Email: contato@cuellar.com.br\n`;
+  mensagem += `• Email: contato@cuellarmoveis.com.br\n`;
   mensagem += `• Horário: Seg-Sex, 8h às 18h\n\n`;
   
   mensagem += `*Cuellar Móveis - Ergonomia que transforma seu trabalho!* 🪑✨`;
@@ -99,8 +98,7 @@ export const formatarMensagemCadeiraIndividual = (dados: DadosUsuario, cadeira: 
   });
   
   mensagem += `\n🎁 *Oferta especial para você:*\n`;
-  mensagem += `• Consultoria ergonômica gratuita\n`;
-  mensagem += `• Desconto exclusivo\n`;
+  mensagem += `• 10% de desconto\n`;
   mensagem += `• Entrega e instalação inclusas\n`;
   mensagem += `• Garantia estendida\n\n`;
   
@@ -108,8 +106,7 @@ export const formatarMensagemCadeiraIndividual = (dados: DadosUsuario, cadeira: 
   mensagem += `Site: https://www.cuellarmoveis.com.br/cadeira\n\n`;
   
   mensagem += `📞 *Entre em contato agora:*\n`;
-  mensagem += `WhatsApp: (11) 99999-9999\n`;
-  mensagem += `Email: contato@cuellar.com.br\n\n`;
+  mensagem += `Email: contato@cuellarmoveis.com.br\n\n`;
   
   mensagem += `*Cuellar Móveis - Transformando seu ambiente de trabalho!* 🪑✨`;
   
