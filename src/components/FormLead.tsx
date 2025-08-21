@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { User, Mail, Phone, MapPin } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface FormLeadProps {
   form: UseFormReturn<any>;
@@ -41,8 +42,33 @@ export const FormLead: React.FC<FormLeadProps> = ({ form, onNext }) => {
     return !Object.keys(errors).some(key => ['nome', 'email', 'telefone', 'lgpdConsent'].includes(key));
   };
 
-  const handleNext = () => {
-    if (validateStep1()) {
+  const handleNext = async () => {
+    if (!validateStep1()) return;
+
+    try {
+      const values = form.getValues();
+      const payload = {
+        nome: values.nome,
+        email: values.email,
+        telefone: values.telefone,
+        cidade: values.cidade,
+        estado: values.estado,
+        lgpdConsent: values.lgpdConsent,
+        origem: 'cadeirafit',
+      };
+
+      const { data, error } = await supabase.functions.invoke('criar-lead-kommo', {
+        body: payload,
+      });
+
+      if (error) {
+        console.error('Erro ao criar lead no Kommo:', error);
+      } else {
+        console.log('Lead criado no Kommo:', data);
+      }
+    } catch (e) {
+      console.error('Falha ao enviar lead ao Kommo:', e);
+    } finally {
       onNext();
     }
   };

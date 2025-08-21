@@ -107,9 +107,27 @@ const gerarRecomendacoes = (dados: any): Recomendacao[] => {
   return recomendacoes.slice(0, 3);
 };
 
-// Stubs para integração futura
-const criarLeadKommo = (dados: any, recomendacoes: Recomendacao[]) => {
-  console.log('🔗 criarLeadKommo() - Stub para integração Kommo:', { dados, recomendacoes });
+// Integração real com Kommo via Edge Function
+const criarLeadKommo = async (dados: any) => {
+  try {
+    const payload = {
+      nome: dados.nome,
+      email: dados.email,
+      telefone: dados.telefone,
+      cidade: dados.cidade,
+      estado: dados.estado,
+      lgpdConsent: dados.lgpdConsent,
+      origem: 'cadeirafit',
+    };
+    const { data, error } = await supabase.functions.invoke('criar-lead-kommo', { body: payload });
+    if (error) {
+      console.error('Erro ao criar lead no Kommo:', error);
+    } else {
+      console.log('Lead criado no Kommo:', data);
+    }
+  } catch (e) {
+    console.error('Falha ao enviar lead ao Kommo:', e);
+  }
 };
 
 const salvarNoSupabase = async (dados: any, recomendacoes: Recomendacao[]) => {
@@ -189,7 +207,7 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
       // Salvar dados no sistema primeiro
       console.log(`💾 Execução ${executionId}: Salvando dados da consulta...`);
       await salvarNoSupabase(dados, recomendacoes);
-      criarLeadKommo(dados, recomendacoes);
+      await criarLeadKommo(dados);
       
       console.log(`📤 Execução ${executionId}: Tentando enviar mensagens via AvisaAPI...`);
       
