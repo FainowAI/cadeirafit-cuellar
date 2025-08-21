@@ -1,1 +1,4 @@
 project_id = "gouzenuxqwqsrqdygocg"
+
+[functions.salvar-consulta]
+verify_jwt = false

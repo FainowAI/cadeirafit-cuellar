@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      consultas_cadeiras: {
+        Row: {
+          altura: number
+          cidade: string | null
+          created_at: string
+          email: string
+          estado: string | null
+          id: string
+          ip_address: string | null
+          lgpd_consent: boolean
+          nome: string
+          perfil_postural: string
+          peso: number
+          recomendacoes: Json | null
+          referrer: string | null
+          telefone: string | null
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          altura: number
+          cidade?: string | null
+          created_at?: string
+          email: string
+          estado?: string | null
+          id?: string
+          ip_address?: string | null
+          lgpd_consent?: boolean
+          nome: string
+          perfil_postural: string
+          peso: number
+          recomendacoes?: Json | null
+          referrer?: string | null
+          telefone?: string | null
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          altura?: number
+          cidade?: string | null
+          created_at?: string
+          email?: string
+          estado?: string | null
+          id?: string
+          ip_address?: string | null
+          lgpd_consent?: boolean
+          nome?: string
+          perfil_postural?: string
+          peso?: number
+          recomendacoes?: Json | null
+          referrer?: string | null
+          telefone?: string | null
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       contatos_agente: {
         Row: {
           agente: string | null

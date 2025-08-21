@@ -8,6 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import categorias from '../data/categorias.json';
 import { avisaApi } from '../services/avisaApi';
 import { formatarMensagemWhatsApp, formatarMensagemResumida, formatarMensagemCadeiraIndividual } from '../utils/whatsappMessage';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ResultadoProps {
   form: UseFormReturn<any>;
@@ -111,8 +112,38 @@ const criarLeadKommo = (dados: any, recomendacoes: Recomendacao[]) => {
   console.log('🔗 criarLeadKommo() - Stub para integração Kommo:', { dados, recomendacoes });
 };
 
-const salvarNoSupabase = (dados: any, recomendacoes: Recomendacao[]) => {
-  console.log('💾 salvarNoSupabase() - Stub para Supabase:', { dados, recomendacoes });
+const salvarNoSupabase = async (dados: any, recomendacoes: Recomendacao[]) => {
+  try {
+    console.log('💾 Salvando consulta no Supabase:', dados);
+    
+    const consultaData = {
+      nome: dados.nome,
+      email: dados.email,
+      telefone: dados.telefone || null,
+      cidade: dados.cidade || null,
+      estado: dados.estado || null,
+      altura: dados.altura,
+      peso: dados.peso,
+      perfilPostural: dados.perfilPostural,
+      recomendacoes: recomendacoes,
+      lgpdConsent: dados.lgpdConsent || false
+    };
+
+    const { data, error } = await supabase.functions.invoke('salvar-consulta', {
+      body: consultaData
+    });
+
+    if (error) {
+      console.error('Erro ao salvar consulta:', error);
+      throw error;
+    }
+
+    console.log('✅ Consulta salva com sucesso no Supabase:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ Erro ao salvar no Supabase:', error);
+    throw error;
+  }
 };
 
 export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart }) => {
@@ -133,9 +164,10 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
     setIsEnviandoWhatsApp(true);
     
     try {
-      // Salvar dados no sistema
+      // Salvar dados no sistema primeiro
+      console.log('💾 Salvando dados da consulta...');
+      await salvarNoSupabase(dados, recomendacoes);
       criarLeadKommo(dados, recomendacoes);
-      salvarNoSupabase(dados, recomendacoes);
       
       console.log('📤 Tentando enviar mensagens via AvisaAPI...');
       
