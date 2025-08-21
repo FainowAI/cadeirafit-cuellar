@@ -1,11 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ReasonAccordion } from '@/components/ui/reason-accordion';
 import { PrimaryButton } from '@/components/ui/primary-button';
 import { SecondaryButton } from '@/components/ui/secondary-button';
+import { SkeletonCard } from '@/components/ui/skeleton';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, MessageCircle, Star, CheckCircle, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import categorias from '../data/categorias.json';
@@ -169,6 +170,8 @@ const salvarNoSupabase = async (dados: any, recomendacoes: Recomendacao[]) => {
 
 export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart }) => {
   const dados = form.getValues();
+  const [isEnviandoWhatsApp, setIsEnviandoWhatsApp] = useState(false);
+  const [showSkeleton, setShowSkeleton] = useState(true);
   
   // Memoizar as recomendações para evitar recálculo desnecessário
   const recomendacoes = useMemo(() => {
@@ -176,12 +179,18 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
     console.log('🎯 Gerando recomendações:', recs.length, recs.map(r => r.categoria.rotulo));
     return recs;
   }, [dados.altura, dados.peso, dados.perfilPostural]);
-  
-  const [isEnviandoWhatsApp, setIsEnviandoWhatsApp] = useState(false);
-  
-  // Debug: Log dos dados e recomendações na renderização
-  console.log('🔄 Renderizando componente Resultado');
-  console.log('📊 Dados do usuário:', dados);
+
+  // Show skeleton briefly then content with stagger animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSkeleton(false);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const reducedMotion = typeof window !== 'undefined' 
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
+    : false;
   
   const handleEnviarPropostaWhatsApp = async () => {
     const executionId = Date.now().toString();

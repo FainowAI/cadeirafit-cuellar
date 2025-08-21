@@ -2,6 +2,7 @@ import React from 'react';
 import { RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
 import { Expand } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface ProfileCardProps {
@@ -23,6 +24,14 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
   onSelect,
   onExpandImage,
 }) => {
+  const reducedMotion = typeof window !== 'undefined' 
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
+    : false;
+
+  const handleSelect = () => {
+    onSelect(id);
+  };
+
   return (
     <div className="relative">
       <RadioGroupItem 
@@ -31,20 +40,31 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
         className="absolute top-3 right-3 z-10" 
         aria-describedby={`${id}-description`}
       />
-      <label
+      <motion.label
         htmlFor={id}
         className={cn(
-          "block cursor-pointer rounded-2xl border-2 p-6 transition-all duration-300 ripple scale-press",
-          "hover:border-[#D4AF37]/50 hover:shadow-card hover:-translate-y-px focus-within:ring-2 focus-within:ring-[#D4AF37]/40 focus-within:ring-offset-2",
+          "block cursor-pointer rounded-2xl border-2 p-6 transition-all duration-300",
+          "hover:border-[#D4AF37]/50 focus-within:ring-2 focus-within:ring-[#D4AF37]/40 focus-within:ring-offset-2",
           isSelected 
-            ? "border-[#D4AF37] bg-[#D4AF37]/5 shadow-card ring-2 ring-[#D4AF37]/30 profile-select" 
+            ? "border-[#D4AF37] bg-[#D4AF37]/5 shadow-card ring-2 ring-[#D4AF37]/30" 
             : "border-border hover:shadow-md"
         )}
-        onClick={() => onSelect(id)}
+        onClick={handleSelect}
+        whileHover={reducedMotion ? {} : { y: -1, scale: 1.01 }}
+        whileTap={reducedMotion ? {} : { scale: 0.98 }}
+        animate={isSelected && !reducedMotion ? { scale: [0.98, 1] } : {}}
+        transition={{ 
+          duration: 0.18, 
+          ease: [0.4, 0, 0.2, 1] as const 
+        }}
       >
         <div className="flex flex-col items-center text-center">
           {/* Imagem 1:1 */}
-          <div className="w-20 h-20 flex-shrink-0 bg-muted rounded-2xl overflow-hidden mb-4 relative group">
+          <motion.div 
+            className="w-20 h-20 flex-shrink-0 bg-muted rounded-2xl overflow-hidden mb-4 relative group"
+            whileHover={reducedMotion ? {} : { scale: 1.05 }}
+            transition={{ duration: 0.18 }}
+          >
             <img
               src={imageUrl}
               alt={`Ilustração de coluna com ${label.toLowerCase()}`}
@@ -65,15 +85,19 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
             >
               <Expand className="h-3 w-3" />
             </Button>
-          </div>
+          </motion.div>
           
           <div className="space-y-2">
-            <div className={cn(
-              "font-medium text-base transition-colors",
-              isSelected ? "text-[#D4AF37]" : "text-foreground"
-            )}>
+            <motion.div 
+              className={cn(
+                "font-medium text-base transition-colors",
+                isSelected ? "text-[#D4AF37]" : "text-foreground"
+              )}
+              animate={isSelected ? { scale: [1, 1.02, 1] } : {}}
+              transition={{ duration: 0.3 }}
+            >
               {label}
-            </div>
+            </motion.div>
             <div 
               id={`${id}-description`}
               className="text-sm text-muted-foreground leading-relaxed"
@@ -82,7 +106,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
             </div>
           </div>
         </div>
-      </label>
+      </motion.label>
     </div>
   );
 };
