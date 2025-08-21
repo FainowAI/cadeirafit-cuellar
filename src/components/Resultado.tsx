@@ -193,41 +193,29 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
       
       console.log(`📤 Execução ${executionId}: Tentando enviar mensagens via AvisaAPI...`);
       
-      // Enviar uma mensagem para cada cadeira recomendada
-      const resultados = [];
-      console.log(`📋 Execução ${executionId}: Total de recomendações: ${recomendacoes.length}`);
-      console.log(`📋 Execução ${executionId}: Recomendações:`, recomendacoes.map(r => r.categoria.rotulo));
+      // Enviar mensagem apenas para a cadeira com prioridade mais alta (primeira)
+      const cadeiraRecomendada = recomendacoes.find(r => r.prioridade === 'alta') || recomendacoes[0];
+      console.log(`📋 Execução ${executionId}: Enviando apenas para a cadeira principal: ${cadeiraRecomendada.categoria.rotulo}`);
       
-      for (const [index, cadeira] of recomendacoes.entries()) {
-        const mensagemCadeira = formatarMensagemCadeiraIndividual(dados, cadeira);
-        console.log(`📤 Enviando mensagem ${index + 1}/${recomendacoes.length} para cadeira: ${cadeira.categoria.rotulo}`);
-        console.log(`📞 Telefone: ${dados.telefone}`);
-        console.log(`💬 Prévia da mensagem: ${mensagemCadeira.substring(0, 100)}...`);
-        
-        const resultado = await avisaApi.sendMessage(dados.telefone, mensagemCadeira);
-        console.log(`✅ Resultado do envio ${index + 1}:`, resultado);
-        resultados.push(resultado);
-        
-        // Aguardar um pouco entre as mensagens para evitar spam
-        if (index < recomendacoes.length - 1) {
-          console.log(`⏱️ Aguardando 2 segundos antes da próxima mensagem...`);
-          await new Promise(resolve => setTimeout(resolve, 2000));
-        }
-      }
+      const mensagemCadeira = formatarMensagemCadeiraIndividual(dados, cadeiraRecomendada);
+      console.log(`📤 Enviando mensagem para cadeira: ${cadeiraRecomendada.categoria.rotulo}`);
+      console.log(`📞 Telefone: ${dados.telefone}`);
+      console.log(`💬 Prévia da mensagem: ${mensagemCadeira.substring(0, 100)}...`);
       
-      // Verificar se pelo menos uma mensagem foi enviada com sucesso
-      const sucessos = resultados.filter(r => r.success);
+      const resultado = await avisaApi.sendMessage(dados.telefone, mensagemCadeira);
+      console.log(`✅ Resultado do envio:`, resultado);
+      const resultados = [resultado];
       
-      if (sucessos.length > 0) {
+      // Verificar se a mensagem foi enviada com sucesso
+      if (resultado.success) {
         toast({
-          title: "Mensagens enviadas com sucesso!",
-          description: `${sucessos.length} mensagem(ns) enviada(s). Verifique seu WhatsApp para receber as recomendações.`,
+          title: "Mensagem enviada com sucesso!",
+          description: "Verifique seu WhatsApp para receber sua recomendação personalizada.",
         });
         
-        console.log('📱 WhatsApp enviado:', sucessos);
+        console.log('📱 WhatsApp enviado:', resultado);
       } else {
-        const primeiroErro = resultados.find(r => !r.success);
-        throw new Error(`Erro na API: ${primeiroErro?.message || 'Erro desconhecido'}`);
+        throw new Error(`Erro na API: ${resultado.message || 'Erro desconhecido'}`);
       }
     } catch (error) {
       console.error('Erro ao enviar WhatsApp:', error);
