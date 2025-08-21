@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Ruler, Weight, User2, HelpCircle, ArrowLeft } from 'lucide-react';
-import { ModalAjuda } from './ModalAjuda';
+import { Ruler, Weight, User2, ArrowLeft } from 'lucide-react';
+import { PerfilPosturalStep } from './postura/PerfilPosturalStep';
 
 interface FormPerfilProps {
   form: UseFormReturn<any>;
@@ -15,31 +13,7 @@ interface FormPerfilProps {
   onBack: () => void;
 }
 
-const perfisPosturais = [
-  {
-    id: 'equilibrado',
-    label: 'Equilibrado',
-    description: 'Postura natural com curvas normais da coluna'
-  },
-  {
-    id: 'lordose-acentuada',
-    label: 'Lordose Acentuada',
-    description: 'Curvatura acentuada na região lombar'
-  },
-  {
-    id: 'cifose-acentuada',
-    label: 'Cifose Acentuada',
-    description: 'Curvatura acentuada na região torácica'
-  },
-  {
-    id: 'assimetria-leve',
-    label: 'Assimetria Leve',
-    description: 'Pequeno desalinhamento dos ombros ou quadril'
-  }
-];
-
 export const FormPerfil: React.FC<FormPerfilProps> = ({ form, onNext, onBack }) => {
-  const [showModal, setShowModal] = useState(false);
 
   const validateStep2 = () => {
     const values = form.getValues();
@@ -125,51 +99,7 @@ export const FormPerfil: React.FC<FormPerfilProps> = ({ form, onNext, onBack }) 
             />
           </div>
 
-          <FormField
-            control={form.control}
-            name="perfilPostural"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <FormLabel>Perfil Postural *</FormLabel>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowModal(true)}
-                    className="text-accent hover:text-accent/80 p-1 h-6 w-6"
-                  >
-                    <HelpCircle className="h-4 w-4" />
-                  </Button>
-                </div>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                  >
-                    {perfisPosturais.map((perfil) => (
-                      <div key={perfil.id} className="flex items-start space-x-3 space-y-0">
-                        <RadioGroupItem value={perfil.id} id={perfil.id} className="mt-1" />
-                        <label
-                          htmlFor={perfil.id}
-                          className="flex-1 cursor-pointer rounded-lg border-2 border-muted hover:border-accent/50 p-4 transition-colors"
-                        >
-                          <div className="space-y-2">
-                            <div className="font-medium">{perfil.label}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {perfil.description}
-                            </div>
-                          </div>
-                        </label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <PerfilPosturalStep form={form} />
 
           <div className="flex gap-4">
             <Button
@@ -191,11 +121,6 @@ export const FormPerfil: React.FC<FormPerfilProps> = ({ form, onNext, onBack }) 
           </div>
         </CardContent>
       </Card>
-
-      <ModalAjuda 
-        isOpen={showModal} 
-        onClose={() => setShowModal(false)} 
-      />
     </>
   );
 };
