@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -148,11 +148,32 @@ const salvarNoSupabase = async (dados: any, recomendacoes: Recomendacao[]) => {
 
 export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart }) => {
   const dados = form.getValues();
-  const recomendacoes = gerarRecomendacoes(dados);
+  
+  // Memoizar as recomendações para evitar recálculo desnecessário
+  const recomendacoes = useMemo(() => {
+    const recs = gerarRecomendacoes(dados);
+    console.log('🎯 Gerando recomendações:', recs.length, recs.map(r => r.categoria.rotulo));
+    return recs;
+  }, [dados.altura, dados.peso, dados.perfilPostural]);
+  
   const [isEnviandoWhatsApp, setIsEnviandoWhatsApp] = useState(false);
   
+  // Debug: Log dos dados e recomendações na renderização
+  console.log('🔄 Renderizando componente Resultado');
+  console.log('📊 Dados do usuário:', dados);
+  
   const handleEnviarPropostaWhatsApp = async () => {
+    const executionId = Date.now().toString();
+    console.log(`🆔 Execução ${executionId}: Função handleEnviarPropostaWhatsApp chamada`);
+    
+    // Verificar se já está enviando para evitar cliques duplos
+    if (isEnviandoWhatsApp) {
+      console.log(`⚠️ Execução ${executionId}: Envio já em andamento, ignorando clique duplo`);
+      return;
+    }
+
     if (!dados.telefone) {
+      console.log(`❌ Execução ${executionId}: Telefone não encontrado`);
       toast({
         title: "Telefone não encontrado",
         description: "Por favor, volte e preencha seus dados completos.",
@@ -161,28 +182,35 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
       return;
     }
 
+    console.log(`🚀 Execução ${executionId}: Iniciando processo de envio de WhatsApp...`);
     setIsEnviandoWhatsApp(true);
     
     try {
       // Salvar dados no sistema primeiro
-      console.log('💾 Salvando dados da consulta...');
+      console.log(`💾 Execução ${executionId}: Salvando dados da consulta...`);
       await salvarNoSupabase(dados, recomendacoes);
       criarLeadKommo(dados, recomendacoes);
       
-      console.log('📤 Tentando enviar mensagens via AvisaAPI...');
+      console.log(`📤 Execução ${executionId}: Tentando enviar mensagens via AvisaAPI...`);
       
       // Enviar uma mensagem para cada cadeira recomendada
       const resultados = [];
+      console.log(`📋 Execução ${executionId}: Total de recomendações: ${recomendacoes.length}`);
+      console.log(`📋 Execução ${executionId}: Recomendações:`, recomendacoes.map(r => r.categoria.rotulo));
       
       for (const [index, cadeira] of recomendacoes.entries()) {
         const mensagemCadeira = formatarMensagemCadeiraIndividual(dados, cadeira);
         console.log(`📤 Enviando mensagem ${index + 1}/${recomendacoes.length} para cadeira: ${cadeira.categoria.rotulo}`);
+        console.log(`📞 Telefone: ${dados.telefone}`);
+        console.log(`💬 Prévia da mensagem: ${mensagemCadeira.substring(0, 100)}...`);
         
         const resultado = await avisaApi.sendMessage(dados.telefone, mensagemCadeira);
+        console.log(`✅ Resultado do envio ${index + 1}:`, resultado);
         resultados.push(resultado);
         
         // Aguardar um pouco entre as mensagens para evitar spam
         if (index < recomendacoes.length - 1) {
+          console.log(`⏱️ Aguardando 2 segundos antes da próxima mensagem...`);
           await new Promise(resolve => setTimeout(resolve, 2000));
         }
       }
@@ -203,11 +231,11 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
       }
     } catch (error) {
       console.error('Erro ao enviar WhatsApp:', error);
-      toast({
+    toast({
         title: "Erro ao enviar mensagem",
         description: "Tente novamente ou entre em contato conosco.",
         variant: "destructive",
-      });
+    });
     } finally {
       setIsEnviandoWhatsApp(false);
     }
@@ -305,7 +333,7 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
                 {isEnviandoWhatsApp ? (
                   <Loader2 className="h-5 w-5 mr-2 animate-spin" />
                 ) : (
-                  <MessageCircle className="h-5 w-5 mr-2" />
+                <MessageCircle className="h-5 w-5 mr-2" />
                 )}
                 {isEnviandoWhatsApp ? 'Enviando...' : 'Receber no WhatsApp'}
               </Button>
