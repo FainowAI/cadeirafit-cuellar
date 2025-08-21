@@ -352,6 +352,29 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
         </CardContent>
       </Card>
 
+      <Card className="rounded-2xl shadow-card bg-gradient-to-r from-primary/5 to-accent/5">
+        <CardContent className="pt-8">
+          <div className="text-center space-y-6">
+            <h3 className="text-2xl font-bold">Venha conhecer mais produtos da Cuellar</h3>
+            <p className="text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
+              Explore nossa linha completa de cadeiras e encontre ainda mais opções para o seu escritório.
+            </p>
+            
+            <div className="flex justify-center">
+              <a
+                href="https://www.cuellarmoveis.com.br/cadeira"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <PrimaryButton size="lg" className="px-8">
+                  Conhecer Mais Produtos
+                </PrimaryButton>
+              </a>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="flex flex-col sm:flex-row gap-4">
         <SecondaryButton
           onClick={onBack}
