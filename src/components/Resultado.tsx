@@ -210,7 +210,7 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
               Nossa equipe pode elaborar uma proposta personalizada com preços especiais.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex justify-center">
               <Button 
                 onClick={handleEnviarProposta}
                 className="bg-green-600 hover:bg-green-700 text-white"
@@ -218,15 +218,6 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
               >
                 <MessageCircle className="h-5 w-5 mr-2" />
                 Receber no WhatsApp
-              </Button>
-              
-              <Button 
-                onClick={handleEnviarProposta}
-                variant="outline"
-                size="lg"
-              >
-                <Mail className="h-5 w-5 mr-2" />
-                Receber por E-mail
               </Button>
             </div>
           </div>
