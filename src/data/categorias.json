@@ -11,7 +11,8 @@
         "Braços 4D reguláveis",
         "Mecanismo sincronizado premium"
       ],
-      "icone": "Crown"
+      "icone": "Crown",
+      "imagem": "/images/cadeiras/diretor-presidente.jpg"
     },
     {
       "id": "executiva-mesh",
@@ -24,7 +25,8 @@
         "Braços reguláveis",
         "Design contemporâneo"
       ],
-      "icone": "Wind"
+      "icone": "Wind",
+      "imagem": "/images/cadeiras/executiva-mesh.jpg"
     },
     {
       "id": "secretaria",
@@ -37,7 +39,8 @@
         "Custo-benefício excelente",
         "Ideal para uso diário"
       ],
-      "icone": "Users"
+      "icone": "Users",
+      "imagem": "/images/cadeiras/secretaria.jpg"
     },
     {
       "id": "fixa",
@@ -50,7 +53,8 @@
         "Fácil manutenção",
         "Ideal para visitantes"
       ],
-      "icone": "Armchair"
+      "icone": "Armchair",
+      "imagem": "/images/cadeiras/fixa.jpg"
     },
     {
       "id": "banqueta",
@@ -64,7 +68,8 @@
         "Assento ergonômico",
         "Ideal para trabalho em pé"
       ],
-      "icone": "ChairIcon"
+      "icone": "ChairIcon",
+      "imagem": "/images/cadeiras/banqueta.jpg"
     }
   ]
 }
