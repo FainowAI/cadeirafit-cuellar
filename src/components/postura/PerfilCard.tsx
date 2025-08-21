@@ -30,7 +30,7 @@ export const PerfilCard: React.FC<PerfilCardProps> = ({
       <label
         htmlFor={id}
         className={cn(
-          "block cursor-pointer rounded-lg border-2 p-3 sm:p-4 transition-all duration-200",
+          "block cursor-pointer rounded-lg border-2 p-4 transition-all duration-200",
           "hover:border-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
           isSelected 
             ? "border-accent bg-accent/5 shadow-md" 
@@ -39,7 +39,7 @@ export const PerfilCard: React.FC<PerfilCardProps> = ({
         onClick={() => onSelect(id)}
       >
         <div className="flex flex-col items-center text-center">
-          <div className="w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 flex-shrink-0 bg-muted rounded-lg overflow-hidden mb-3">
+          <div className="w-24 h-24 flex-shrink-0 bg-muted rounded-lg overflow-hidden mb-3">
             <img
               src={imageUrl}
               alt={`Ilustração de coluna com ${label.toLowerCase()}`}
@@ -47,16 +47,16 @@ export const PerfilCard: React.FC<PerfilCardProps> = ({
               loading="lazy"
             />
           </div>
-          <div className="space-y-1 sm:space-y-2">
+          <div className="space-y-2">
             <div className={cn(
-              "font-medium text-sm sm:text-base",
+              "font-medium text-base",
               isSelected ? "text-accent" : "text-foreground"
             )}>
               {label}
             </div>
             <div 
               id={`${id}-description`}
-              className="text-xs sm:text-sm text-muted-foreground leading-relaxed"
+              className="text-sm text-muted-foreground leading-relaxed"
             >
               {description}
             </div>
