@@ -6,7 +6,9 @@ import { Form } from '@/components/ui/form';
 import { FormLead } from '@/components/FormLead';
 import { FormPerfil } from '@/components/FormPerfil';
 import { Resultado } from '@/components/Resultado';
-import { ArrowRight, Phone } from 'lucide-react';
+import { AppHeader } from '@/components/ui/app-header';
+import { Stepper, StepStatus } from '@/components/ui/stepper';
+import { ArrowRight } from 'lucide-react';
 
 // Schema de validação
 const formSchema = z.object({
@@ -69,84 +71,66 @@ const Index = () => {
     setCurrentStep('lead');
   };
 
+  const getStepStatus = (step: Step): StepStatus => {
+    const stepOrder: Step[] = ['lead', 'perfil', 'resultado'];
+    const currentIndex = stepOrder.indexOf(currentStep);
+    const stepIndex = stepOrder.indexOf(step);
+    
+    if (stepIndex < currentIndex) return 'completed';
+    if (stepIndex === currentIndex) return 'active';
+    return 'upcoming';
+  };
+
+  const steps = [
+    { id: 'lead', label: 'Dados', status: getStepStatus('lead') },
+    { id: 'perfil', label: 'Perfil', status: getStepStatus('perfil') },
+    { id: 'resultado', label: 'Resultado', status: getStepStatus('resultado') },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header fixo */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold text-primary">Cuellar Móveis</h1>
-          </div>
-          <a
-            href="https://wa.me/5511999999999"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-accent transition-colors"
-          >
-            <Phone className="h-4 w-4" />
-            Fale conosco
-          </a>
-        </div>
-      </header>
+      <AppHeader />
 
-      <main className="container py-8 space-y-8">
-        {/* Seção Hero */}
+      <main className="container py-10 space-y-10">
+        {/* Hero Section - only show on first step */}
         {currentStep === 'lead' && (
-          <section className="text-center space-y-4 mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-primary">
+          <section className="text-center space-y-6 py-14">
+            <h1 className="text-3xl md:text-2xl font-bold text-primary">
               Descubra sua cadeira ideal
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Em 3 passos simples, vamos recomendar as melhores opções de cadeiras Cuellar para seu perfil e necessidades.
             </p>
-            <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground mt-6">
+            <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground mt-8">
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-medium">1</span>
-                Seus dados
+                <span className="w-6 h-6 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-medium text-xs">1</span>
+                <span className="hidden sm:inline">Seus dados</span>
+                <span className="sm:hidden">Dados</span>
               </div>
               <ArrowRight className="h-4 w-4" />
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center font-medium">2</span>
-                Medidas e perfil
+                <span className="w-6 h-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center font-medium text-xs">2</span>
+                <span className="hidden sm:inline">Medidas e perfil</span>
+                <span className="sm:hidden">Perfil</span>
               </div>
               <ArrowRight className="h-4 w-4" />
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center font-medium">3</span>
-                Recomendações
+                <span className="w-6 h-6 bg-muted text-muted-foreground rounded-full flex items-center justify-center font-medium text-xs">3</span>
+                <span className="hidden sm:inline">Recomendações</span>
+                <span className="sm:hidden">Resultado</span>
               </div>
             </div>
           </section>
         )}
 
-        {/* Indicador de progresso */}
-        <div className="w-full max-w-2xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <div className={`flex items-center gap-2 ${currentStep === 'lead' ? 'text-accent' : 'text-muted-foreground'}`}>
-              <span className={`w-8 h-8 rounded-full flex items-center justify-center font-medium ${
-                currentStep === 'lead' ? 'bg-accent text-accent-foreground' : 
-                ['perfil', 'resultado'].includes(currentStep) ? 'bg-green-100 text-green-600' : 'bg-muted text-muted-foreground'
-              }`}>1</span>
-              <span className="font-medium">Dados</span>
-            </div>
-            <div className={`flex items-center gap-2 ${currentStep === 'perfil' ? 'text-accent' : 'text-muted-foreground'}`}>
-              <span className={`w-8 h-8 rounded-full flex items-center justify-center font-medium ${
-                currentStep === 'perfil' ? 'bg-accent text-accent-foreground' : 
-                currentStep === 'resultado' ? 'bg-green-100 text-green-600' : 'bg-muted text-muted-foreground'
-              }`}>2</span>
-              <span className="font-medium">Perfil</span>
-            </div>
-            <div className={`flex items-center gap-2 ${currentStep === 'resultado' ? 'text-accent' : 'text-muted-foreground'}`}>
-              <span className={`w-8 h-8 rounded-full flex items-center justify-center font-medium ${
-                currentStep === 'resultado' ? 'bg-accent text-accent-foreground' : 'bg-muted text-muted-foreground'
-              }`}>3</span>
-              <span className="font-medium">Resultado</span>
-            </div>
-          </div>
-        </div>
+        {/* Stepper - hide on first step initial view */}
+        {(currentStep !== 'lead' || currentStep === 'lead') && (
+          <Stepper steps={steps} />
+        )}
 
-        {/* Formulário e resultados */}
+        {/* Forms and Results */}
         <Form {...form}>
-          <form className="space-y-8">
+          <form className="space-y-6">
             {currentStep === 'lead' && (
               <FormLead form={form} onNext={handleNext} />
             )}
@@ -171,7 +155,7 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-8 mt-16">
+      <footer className="border-t py-10 mt-16">
         <div className="container text-center text-sm text-muted-foreground">
           <p>&copy; 2024 Cuellar Móveis. Todos os direitos reservados.</p>
         </div>
