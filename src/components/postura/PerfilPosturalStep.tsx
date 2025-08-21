@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { HelpCircle } from 'lucide-react';
 import { PerfilCard } from './PerfilCard';
 import { AjudaModal } from './AjudaModal';
+import { ImageModal } from './ImageModal';
 
 // Importar as imagens geradas
 const equilibradoImg = '/images/perfis/equilibrado.png';
@@ -46,7 +47,31 @@ const perfisPosturais = [
 
 export const PerfilPosturalStep: React.FC<PerfilPosturalStepProps> = ({ form }) => {
   const [showModal, setShowModal] = useState(false);
+  const [imageModal, setImageModal] = useState<{
+    isOpen: boolean;
+    imageUrl: string;
+    title: string;
+    description: string;
+  }>({
+    isOpen: false,
+    imageUrl: '',
+    title: '',
+    description: '',
+  });
   const watchedValue = form.watch('perfilPostural');
+
+  const handleExpandImage = (imageUrl: string, title: string, description: string) => {
+    setImageModal({
+      isOpen: true,
+      imageUrl,
+      title,
+      description,
+    });
+  };
+
+  const closeImageModal = () => {
+    setImageModal(prev => ({ ...prev, isOpen: false }));
+  };
 
   return (
     <>
@@ -90,17 +115,18 @@ export const PerfilPosturalStep: React.FC<PerfilPosturalStepProps> = ({ form }) 
                   role="radiogroup"
                   aria-labelledby="perfil-postural-label"
                 >
-                  {perfisPosturais.map((perfil) => (
-                    <PerfilCard
-                      key={perfil.id}
-                      id={perfil.id}
-                      label={perfil.label}
-                      description={perfil.description}
-                      imageUrl={perfil.imageUrl}
-                      isSelected={watchedValue === perfil.id}
-                      onSelect={field.onChange}
-                    />
-                  ))}
+                   {perfisPosturais.map((perfil) => (
+                     <PerfilCard
+                       key={perfil.id}
+                       id={perfil.id}
+                       label={perfil.label}
+                       description={perfil.description}
+                       imageUrl={perfil.imageUrl}
+                       isSelected={watchedValue === perfil.id}
+                       onSelect={field.onChange}
+                       onExpandImage={handleExpandImage}
+                     />
+                   ))}
                 </RadioGroup>
               </FormControl>
               <FormMessage />
@@ -112,6 +138,14 @@ export const PerfilPosturalStep: React.FC<PerfilPosturalStepProps> = ({ form }) 
       <AjudaModal 
         isOpen={showModal} 
         onClose={() => setShowModal(false)} 
+      />
+      
+      <ImageModal
+        isOpen={imageModal.isOpen}
+        onClose={closeImageModal}
+        imageUrl={imageModal.imageUrl}
+        title={imageModal.title}
+        description={imageModal.description}
       />
     </>
   );

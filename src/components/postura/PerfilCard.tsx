@@ -1,5 +1,7 @@
 import React from 'react';
 import { RadioGroupItem } from '@/components/ui/radio-group';
+import { Button } from '@/components/ui/button';
+import { Expand } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface PerfilCardProps {
@@ -9,6 +11,7 @@ interface PerfilCardProps {
   imageUrl: string;
   isSelected: boolean;
   onSelect: (value: string) => void;
+  onExpandImage: (imageUrl: string, label: string, description: string) => void;
 }
 
 export const PerfilCard: React.FC<PerfilCardProps> = ({
@@ -18,6 +21,7 @@ export const PerfilCard: React.FC<PerfilCardProps> = ({
   imageUrl,
   isSelected,
   onSelect,
+  onExpandImage,
 }) => {
   return (
     <div className="relative">
@@ -39,13 +43,27 @@ export const PerfilCard: React.FC<PerfilCardProps> = ({
         onClick={() => onSelect(id)}
       >
         <div className="flex flex-col items-center text-center">
-          <div className="w-24 h-24 flex-shrink-0 bg-muted rounded-lg overflow-hidden mb-3">
+          <div className="w-24 h-24 flex-shrink-0 bg-muted rounded-lg overflow-hidden mb-3 relative group">
             <img
               src={imageUrl}
               alt={`Ilustração de coluna com ${label.toLowerCase()}`}
               className="w-full h-full object-contain"
               loading="lazy"
             />
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon"
+              className="absolute top-1 left-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-background/80 hover:bg-background shadow-sm"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onExpandImage(imageUrl, label, description);
+              }}
+              aria-label={`Ampliar imagem do perfil ${label}`}
+            >
+              <Expand className="h-3 w-3" />
+            </Button>
           </div>
           <div className="space-y-2">
             <div className={cn(
