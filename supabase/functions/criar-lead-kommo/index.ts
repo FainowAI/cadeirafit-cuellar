@@ -52,6 +52,9 @@ serve(async (req) => {
 
     const KOMMO_TOKEN = Deno.env.get('KOMMO_TOKEN');
     const KOMMO_BASE_URL = Deno.env.get('KOMMO_BASE_URL') || 'https://comercialcuellarmoveiscombr.kommo.com';
+    const KOMMO_PIPELINE_ID = Deno.env.get('KOMMO_PIPELINE_ID');
+    const KOMMO_STATUS_ID = Deno.env.get('KOMMO_STATUS_ID');
+    const KOMMO_RESPONSIBLE_USER_ID = Deno.env.get('KOMMO_RESPONSIBLE_USER_ID');
 
     if (!KOMMO_TOKEN) {
       return new Response(JSON.stringify({ error: 'KOMMO_TOKEN não configurado' }), {
@@ -60,12 +63,48 @@ serve(async (req) => {
       });
     }
 
-    // Enviar somente o nome do lead conforme solicitado
-    const payload = [
-      {
-        name: `Lead CadeiraFit - ${body.nome}`,
-      },
-    ];
+    const formattedPhone = formatBrazilPhoneE164(body.telefone);
+
+    const lead: Record<string, unknown> = {
+      name: `Lead CadeiraFit - ${body.nome}`,
+    };
+
+    if (KOMMO_PIPELINE_ID) lead.pipeline_id = Number(KOMMO_PIPELINE_ID);
+    if (KOMMO_STATUS_ID) lead.status_id = Number(KOMMO_STATUS_ID);
+    if (KOMMO_RESPONSIBLE_USER_ID) lead.responsible_user_id = Number(KOMMO_RESPONSIBLE_USER_ID);
+
+    const contact: Record<string, unknown> = { name: body.nome };
+    const contactCustomFields: any[] = [];
+    if (formattedPhone) {
+      contactCustomFields.push({
+        field_code: 'PHONE',
+        values: [{ value: formattedPhone, enum_code: 'WORK' }],
+      });
+    }
+    if (body.email) {
+      contactCustomFields.push({
+        field_code: 'EMAIL',
+        values: [{ value: body.email, enum_code: 'WORK' }],
+      });
+    }
+    if (contactCustomFields.length) {
+      contact.custom_fields_values = contactCustomFields;
+    }
+
+    const embedded: Record<string, unknown> = {
+      contacts: [contact],
+    };
+
+    // Campo de origem opcional como tag simples
+    if (body.origem) {
+      (embedded as any).tags = [{ name: body.origem }];
+    } else {
+      (embedded as any).tags = [{ name: 'cadeirafit' }];
+    }
+
+    (lead as any)._embedded = embedded;
+
+    const payload = [lead];
 
     const response = await fetch(`${KOMMO_BASE_URL}/api/v4/leads`, {
       method: 'POST',
