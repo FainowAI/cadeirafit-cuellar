@@ -1,8 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ReasonAccordion } from '@/components/ui/reason-accordion';
+import { PrimaryButton } from '@/components/ui/primary-button';
+import { SecondaryButton } from '@/components/ui/secondary-button';
+import { SkeletonCard } from '@/components/ui/skeleton';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, MessageCircle, Star, CheckCircle, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import categorias from '../data/categorias.json';
@@ -166,6 +170,8 @@ const salvarNoSupabase = async (dados: any, recomendacoes: Recomendacao[]) => {
 
 export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart }) => {
   const dados = form.getValues();
+  const [isEnviandoWhatsApp, setIsEnviandoWhatsApp] = useState(false);
+  const [showSkeleton, setShowSkeleton] = useState(true);
   
   // Memoizar as recomendações para evitar recálculo desnecessário
   const recomendacoes = useMemo(() => {
@@ -173,12 +179,18 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
     console.log('🎯 Gerando recomendações:', recs.length, recs.map(r => r.categoria.rotulo));
     return recs;
   }, [dados.altura, dados.peso, dados.perfilPostural]);
-  
-  const [isEnviandoWhatsApp, setIsEnviandoWhatsApp] = useState(false);
-  
-  // Debug: Log dos dados e recomendações na renderização
-  console.log('🔄 Renderizando componente Resultado');
-  console.log('📊 Dados do usuário:', dados);
+
+  // Show skeleton briefly then content with stagger animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSkeleton(false);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const reducedMotion = typeof window !== 'undefined' 
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
+    : false;
   
   const handleEnviarPropostaWhatsApp = async () => {
     const executionId = Date.now().toString();
@@ -247,36 +259,44 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
     }
   };
 
-  const getPrioridadeColor = (prioridade: string) => {
+  const getPrioridadeVariant = (prioridade: string) => {
     switch (prioridade) {
-      case 'alta': return 'bg-green-100 text-green-800 border-green-200';
-      case 'media': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'baixa': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'alta': return 'priority';
+      case 'media': return 'secondary';
+      case 'baixa': return 'outline';
+      default: return 'outline';
+    }
+  };
+
+  const getPrioridadeLabel = (prioridade: string) => {
+    switch (prioridade) {
+      case 'alta': return 'Prioridade Alta';
+      case 'media': return 'Recomendada';
+      case 'baixa': return 'Opção';
+      default: return 'Opção';
     }
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
       <Card>
-        <CardHeader className="text-center">
+        <CardHeader className="text-center pb-6">
           <CardTitle className="text-3xl font-bold flex items-center justify-center gap-2">
             <Star className="h-8 w-8 text-accent" />
             Suas Cadeiras Recomendadas
           </CardTitle>
-          <p className="text-muted-foreground">
-            Olá {dados.nome}! Com base no seu perfil, selecionamos as melhores opções para você:
+          <p className="text-base text-muted-foreground">
+            Olá <span className="font-medium text-foreground">{dados.nome}</span>! Com base no seu perfil, selecionamos as melhores opções para você:
           </p>
         </CardHeader>
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {recomendacoes.map((rec, index) => (
-          <Card key={rec.categoria.id} className="relative overflow-hidden hover:shadow-lg transition-shadow duration-300">
+          <Card key={rec.categoria.id} className="relative overflow-hidden hover:shadow-card transition-all duration-300 hover-lift rounded-2xl">
             <div className="absolute top-4 right-4 z-10">
-              <Badge className={getPrioridadeColor(rec.prioridade)}>
-                {rec.prioridade === 'alta' ? 'Prioridade Alta' : 
-                 rec.prioridade === 'media' ? 'Recomendada' : 'Opção'}
+              <Badge variant={getPrioridadeVariant(rec.prioridade)} className="badge-enter">
+                {getPrioridadeLabel(rec.prioridade)}
               </Badge>
             </div>
             
@@ -285,7 +305,7 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
               <img
                 src={(rec.categoria as any).imagem}
                 alt={`Cadeira ${rec.categoria.rotulo}`}
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = '/placeholder.svg';
                 }}
@@ -293,71 +313,53 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
             </div>
             
             <CardHeader className="pb-4">
-              <CardTitle className="text-xl">{rec.categoria.rotulo}</CardTitle>
-              <p className="text-sm text-muted-foreground">
+              <CardTitle className="text-xl font-bold">{rec.categoria.rotulo}</CardTitle>
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 {rec.categoria.descricao}
               </p>
             </CardHeader>
             
-            <CardContent className="space-y-4">
-              <div className="bg-accent/10 p-3 rounded-lg">
-                <p className="text-sm font-medium text-accent">Por que recomendamos:</p>
-                <p className="text-sm text-muted-foreground mt-1">{rec.motivo}</p>
-              </div>
-              
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Principais recursos:</p>
-                <ul className="space-y-1">
-                  {rec.categoria.recursos.slice(0, 4).map((recurso, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                      {recurso}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <CardContent className="pt-0">
+              <ReasonAccordion
+                reason={rec.motivo}
+                features={rec.categoria.recursos}
+              />
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center space-y-4">
-            <h3 className="text-xl font-semibold">Gostou das recomendações?</h3>
-            <p className="text-muted-foreground">
-              Nossa equipe pode elaborar uma proposta personalizada com preços especiais.
+      <Card className="rounded-2xl shadow-card">
+        <CardContent className="pt-8">
+          <div className="text-center space-y-6">
+            <h3 className="text-2xl font-bold">Gostou das recomendações?</h3>
+            <p className="text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
+              Nossa equipe pode elaborar uma proposta personalizada com preços especiais para você.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
+              <PrimaryButton 
                 onClick={handleEnviarPropostaWhatsApp}
-                disabled={isEnviandoWhatsApp}
-                className="bg-green-600 hover:bg-green-700 text-white"
+                loading={isEnviandoWhatsApp}
                 size="lg"
+                className="bg-[#25D366] hover:bg-[#1FAD54] text-white border-none"
               >
-                {isEnviandoWhatsApp ? (
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                ) : (
-                <MessageCircle className="h-5 w-5 mr-2" />
-                )}
+                {!isEnviandoWhatsApp && <MessageCircle className="h-5 w-5 mr-2" />}
                 {isEnviandoWhatsApp ? 'Enviando...' : 'Receber no WhatsApp'}
-              </Button>
+              </PrimaryButton>
             </div>
           </div>
         </CardContent>
       </Card>
 
       <div className="flex flex-col sm:flex-row gap-4">
-        <Button
+        <SecondaryButton
           onClick={onBack}
-          variant="outline"
           className="flex-1"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar e Editar
-        </Button>
-        
+        </SecondaryButton>
       </div>
     </div>
   );
