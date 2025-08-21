@@ -65,9 +65,7 @@ export const formatarMensagemWhatsApp = (dados: DadosUsuario, recomendacoes: Rec
   
   mensagem += `\n🎁 *Próximos passos:*\n`;
   mensagem += `• Nossa equipe especializada irá preparar uma proposta personalizada\n`;
-  mensagem += `• Preços especiais exclusivos para você\n`;
-  mensagem += `• Entrega e instalação inclusas\n`;
-  mensagem += `• Garantia estendida\n\n`;
+  mensagem += `• Preços especiais exclusivos para você\n\n`;
   
   mensagem += `🌐 *Conheça mais sobre nossas cadeiras:*\n`;
   mensagem += `Site: https://www.cuellarmoveis.com.br/cadeira\n\n`;
@@ -87,9 +85,7 @@ export const formatarMensagemCadeiraIndividual = (dados: DadosUsuario, cadeira: 
   mensagem += `Baseado no seu perfil, nossa recomendação especial é a *${cadeira.categoria.rotulo}*!\n\n`;
   
   mensagem += `🎁 *OFERTA ESPECIAL PARA VOCÊ:*\n`;
-  mensagem += `• *10% de desconto exclusivo*\n`;
-  mensagem += `• Entrega e instalação GRÁTIS\n`;
-  mensagem += `• Garantia estendida\n\n`;
+  mensagem += `• *10% de desconto exclusivo*\n\n`;
   
   mensagem += `💡 *Por que é perfeita para você:*\n`;
   mensagem += `${cadeira.motivo}\n\n`;
