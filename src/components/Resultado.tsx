@@ -361,15 +361,15 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
             </p>
             
             <div className="flex justify-center">
-              <a
-                href="https://www.cuellarmoveis.com.br/cadeira"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <PrimaryButton size="lg" className="px-8">
+              <PrimaryButton asChild size="lg" className="px-8">
+                <a
+                  href="https://www.cuellarmoveis.com.br/cadeira"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Conhecer Mais Produtos
-                </PrimaryButton>
-              </a>
+                </a>
+              </PrimaryButton>
             </div>
           </div>
         </CardContent>
