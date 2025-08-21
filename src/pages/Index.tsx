@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -37,6 +37,11 @@ type Step = 'lead' | 'perfil' | 'resultado';
 const Index = () => {
   const [currentStep, setCurrentStep] = useState<Step>('lead');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  // Scroll para o topo quando a etapa muda
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentStep]);
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
