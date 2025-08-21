@@ -282,13 +282,6 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
           Voltar e Editar
         </Button>
         
-        <Button
-          onClick={onRestart}
-          variant="ghost"
-          className="flex-1"
-        >
-          Nova Consulta
-        </Button>
       </div>
     </div>
   );
