@@ -20,17 +20,17 @@ export const PerfilCard: React.FC<PerfilCardProps> = ({
   onSelect,
 }) => {
   return (
-    <div className="flex items-start space-x-3 space-y-0">
+    <div className="relative">
       <RadioGroupItem 
         value={id} 
         id={id} 
-        className="mt-6 flex-shrink-0" 
+        className="absolute top-2 right-2 z-10" 
         aria-describedby={`${id}-description`}
       />
       <label
         htmlFor={id}
         className={cn(
-          "flex-1 cursor-pointer rounded-lg border-2 p-4 transition-all duration-200",
+          "block cursor-pointer rounded-lg border-2 p-4 transition-all duration-200",
           "hover:border-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
           isSelected 
             ? "border-accent bg-accent/5 shadow-md" 
@@ -38,8 +38,8 @@ export const PerfilCard: React.FC<PerfilCardProps> = ({
         )}
         onClick={() => onSelect(id)}
       >
-        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-          <div className="w-16 h-16 flex-shrink-0 bg-muted rounded-lg overflow-hidden">
+        <div className="flex flex-col items-center text-center">
+          <div className="w-24 h-24 flex-shrink-0 bg-muted rounded-lg overflow-hidden mb-3">
             <img
               src={imageUrl}
               alt={`Ilustração de coluna com ${label.toLowerCase()}`}
@@ -47,16 +47,16 @@ export const PerfilCard: React.FC<PerfilCardProps> = ({
               loading="lazy"
             />
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="space-y-2">
             <div className={cn(
-              "font-medium text-sm mb-1",
+              "font-medium text-base",
               isSelected ? "text-accent" : "text-foreground"
             )}>
               {label}
             </div>
             <div 
               id={`${id}-description`}
-              className="text-xs text-muted-foreground leading-relaxed"
+              className="text-sm text-muted-foreground leading-relaxed"
             >
               {description}
             </div>
