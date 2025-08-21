@@ -1,0 +1,70 @@
+{
+  "categorias": [
+    {
+      "id": "diretor-presidente",
+      "rotulo": "Diretor/Presidente",
+      "descricao": "Cadeiras executivas de alto padrão com encosto alto e máximo suporte",
+      "recursos": [
+        "Encosto alto com apoio de cabeça",
+        "Sistema lombar ajustável (BackSystem)",
+        "Base reforçada para maior peso",
+        "Braços 4D reguláveis",
+        "Mecanismo sincronizado premium"
+      ],
+      "icone": "Crown"
+    },
+    {
+      "id": "executiva-mesh",
+      "rotulo": "Executiva Mesh",
+      "descricao": "Design moderno com encosto em tela respirável e ajustes ergonômicos",
+      "recursos": [
+        "Encosto em tela mesh para ventilação",
+        "Apoio lombar ajustável",
+        "Assento estofado confortável",
+        "Braços reguláveis",
+        "Design contemporâneo"
+      ],
+      "icone": "Wind"
+    },
+    {
+      "id": "secretaria",
+      "rotulo": "Secretária",
+      "descricao": "Solução compacta e funcional com excelente custo-benefício",
+      "recursos": [
+        "Design compacto e versátil",
+        "Ajustes essenciais de altura",
+        "Estofado resistente",
+        "Custo-benefício excelente",
+        "Ideal para uso diário"
+      ],
+      "icone": "Users"
+    },
+    {
+      "id": "fixa",
+      "rotulo": "Fixa",
+      "descricao": "Cadeiras para salas de reunião e recepção com design elegante",
+      "recursos": [
+        "Design elegante e profissional",
+        "Estrutura fixa e estável",
+        "Estofado de qualidade",
+        "Fácil manutenção",
+        "Ideal para visitantes"
+      ],
+      "icone": "Armchair"
+    },
+    {
+      "id": "banqueta",
+      "rotulo": "Banqueta",
+      "rotulo_alternativo": "Apoio Alto",
+      "descricao": "Soluções para bancadas e trabalho em pé com apoio adequado",
+      "recursos": [
+        "Altura regulável para bancadas",
+        "Apoio para os pés",
+        "Base giratória estável",
+        "Assento ergonômico",
+        "Ideal para trabalho em pé"
+      ],
+      "icone": "ChairIcon"
+    }
+  ]
+}
