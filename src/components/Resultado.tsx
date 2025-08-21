@@ -3,7 +3,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, MessageCircle, Mail, Star, CheckCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Star, CheckCircle, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import categorias from '../data/categorias.json';
 import { avisaApi } from '../services/avisaApi';
@@ -119,7 +119,6 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
   const dados = form.getValues();
   const recomendacoes = gerarRecomendacoes(dados);
   const [isEnviandoWhatsApp, setIsEnviandoWhatsApp] = useState(false);
-  const [isEnviandoEmail, setIsEnviandoEmail] = useState(false);
   
   const handleEnviarPropostaWhatsApp = async () => {
     if (!dados.telefone) {
@@ -169,42 +168,6 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
     }
   };
 
-  const handleEnviarPropostaEmail = async () => {
-    setIsEnviandoEmail(true);
-    
-    try {
-      // Simular envio por email (implementar integração futura)
-      criarLeadKommo(dados, recomendacoes);
-      salvarNoSupabase(dados, recomendacoes);
-      
-      // Exibir dados no console (MVP)
-      const resultData = {
-        lead: dados,
-        recomendacoes: recomendacoes.map(r => ({
-          categoria: r.categoria.rotulo,
-          prioridade: r.prioridade,
-          motivo: r.motivo
-        }))
-      };
-      
-      console.log('📋 Dados do Lead + Recomendação:', JSON.stringify(resultData, null, 2));
-      
-      toast({
-        title: "Proposta enviada com sucesso!",
-        description: "Em breve nossa equipe entrará em contato com você.",
-      });
-    } catch (error) {
-      console.error('Erro ao enviar email:', error);
-      toast({
-        title: "Erro ao enviar proposta",
-        description: "Tente novamente ou entre em contato conosco.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsEnviandoEmail(false);
-    }
-  };
-
   const getPrioridadeColor = (prioridade: string) => {
     switch (prioridade) {
       case 'alta': return 'bg-green-100 text-green-800 border-green-200';
@@ -230,12 +193,24 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {recomendacoes.map((rec, index) => (
-          <Card key={rec.categoria.id} className="relative overflow-hidden">
-            <div className="absolute top-4 right-4">
+          <Card key={rec.categoria.id} className="relative overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <div className="absolute top-4 right-4 z-10">
               <Badge className={getPrioridadeColor(rec.prioridade)}>
                 {rec.prioridade === 'alta' ? 'Prioridade Alta' : 
                  rec.prioridade === 'media' ? 'Recomendada' : 'Opção'}
               </Badge>
+            </div>
+            
+            {/* Imagem da cadeira */}
+            <div className="aspect-square w-full bg-muted overflow-hidden">
+              <img
+                src={(rec.categoria as any).imagem}
+                alt={`Cadeira ${rec.categoria.rotulo}`}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/placeholder.svg';
+                }}
+              />
             </div>
             
             <CardHeader className="pb-4">
@@ -278,7 +253,7 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 onClick={handleEnviarPropostaWhatsApp}
-                disabled={isEnviandoWhatsApp || isEnviandoEmail}
+                disabled={isEnviandoWhatsApp}
                 className="bg-green-600 hover:bg-green-700 text-white"
                 size="lg"
               >
@@ -288,20 +263,6 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
                   <MessageCircle className="h-5 w-5 mr-2" />
                 )}
                 {isEnviandoWhatsApp ? 'Enviando...' : 'Receber no WhatsApp'}
-              </Button>
-              
-              <Button 
-                onClick={handleEnviarPropostaEmail}
-                disabled={isEnviandoWhatsApp || isEnviandoEmail}
-                variant="outline"
-                size="lg"
-              >
-                {isEnviandoEmail ? (
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                ) : (
-                  <Mail className="h-5 w-5 mr-2" />
-                )}
-                {isEnviandoEmail ? 'Enviando...' : 'Receber por E-mail'}
               </Button>
             </div>
           </div>
