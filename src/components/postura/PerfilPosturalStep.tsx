@@ -8,10 +8,10 @@ import { PerfilCard } from './PerfilCard';
 import { AjudaModal } from './AjudaModal';
 
 // Importar as imagens geradas
-import equilibradoImg from '/public/images/perfis/equilibrado.png';
-import lordoseImg from '/public/images/perfis/lordose-acentuada.png';
-import cifoseImg from '/public/images/perfis/cifose-acentuada.png';
-import assimetriaImg from '/public/images/perfis/assimetria-leve.png';
+const equilibradoImg = '/images/perfis/equilibrado.png';
+const lordoseImg = '/images/perfis/lordose-acentuada.png';
+const cifoseImg = '/images/perfis/cifose-acentuada.png';
+const assimetriaImg = '/images/perfis/assimetria-leve.png';
 
 interface PerfilPosturalStepProps {
   form: UseFormReturn<any>;
