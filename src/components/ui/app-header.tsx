@@ -14,7 +14,7 @@ export const AppHeader: React.FC = () => {
             <h1 className="text-2xl font-bold text-primary">Cuellar Móveis</h1>
           </div>
           <a
-            href="https://wa.me/5511999999999"
+            href="https://wa.me/5521977274145?text=Ola!%20Queria%20saber%20mais%20dos%20produtos%20da%20cuellar!"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-accent transition-colors hover-lift"
