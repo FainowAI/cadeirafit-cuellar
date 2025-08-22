@@ -27,23 +27,12 @@ export const FormLead: React.FC<FormLeadProps> = ({ form, onNext }) => {
     onChange(formatted);
   };
 
-  const validateStep1 = () => {
-    const values = form.getValues();
-    const requiredFields = ['nome', 'email', 'telefone', 'lgpdConsent'];
-    
-    for (const field of requiredFields) {
-      if (!values[field as keyof typeof values]) {
-        form.trigger(field as string);
-        return false;
-      }
-    }
-    
-    const errors = form.formState.errors;
-    return !Object.keys(errors).some(key => ['nome', 'email', 'telefone', 'lgpdConsent'].includes(key));
+  const validateStep1 = async () => {
+    return form.trigger(['nome', 'email', 'telefone', 'lgpdConsent']);
   };
 
   const handleNext = async () => {
-    if (!validateStep1()) return;
+    if (!(await validateStep1())) return;
 
     try {
       const values = form.getValues();

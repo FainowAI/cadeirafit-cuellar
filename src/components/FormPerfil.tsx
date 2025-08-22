@@ -54,23 +54,12 @@ export const FormPerfil: React.FC<FormPerfilProps> = ({ form, onNext, onBack }) 
     setImageModalOpen(true);
   };
 
-  const validateStep2 = () => {
-    const values = form.getValues();
-    const requiredFields = ['altura', 'peso', 'perfilPostural'];
-    
-    for (const field of requiredFields) {
-      if (!values[field as keyof typeof values]) {
-        form.trigger(field as string);
-        return false;
-      }
-    }
-    
-    const errors = form.formState.errors;
-    return !Object.keys(errors).some(key => ['altura', 'peso', 'perfilPostural'].includes(key));
+  const validateStep2 = async () => {
+    return form.trigger(['altura', 'peso', 'perfilPostural']);
   };
 
-  const handleNext = () => {
-    if (validateStep2()) {
+  const handleNext = async () => {
+    if (await validateStep2()) {
       onNext();
     }
   };
