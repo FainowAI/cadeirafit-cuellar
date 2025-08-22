@@ -126,7 +126,7 @@ export const FormPerfil: React.FC<FormPerfilProps> = ({ form, onNext, onBack }) 
                 <button
                   type="button"
                   onClick={() => setAjudaModalOpen(true)}
-                  className="inline-flex items-center gap-1 text-sm text-accent hover:text-accent/80 transition-colors hover-lift"
+                  className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors hover-lift"
                   aria-label="Como identificar meu perfil postural?"
                 >
                   <HelpCircle className="h-4 w-4" />
