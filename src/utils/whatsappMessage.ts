@@ -18,63 +18,17 @@ interface DadosUsuario {
 }
 
 export const formatarMensagemWhatsApp = (dados: DadosUsuario, recomendacoes: Recomendacao[]): string => {
-  const getPrioridadeEmoji = (prioridade: string) => {
-    switch (prioridade) {
-      case 'alta': return '🔥';
-      case 'media': return '⭐';
-      case 'baixa': return '💡';
-      default: return '📋';
-    }
-  };
-
-  const getPerfilEmoji = (perfil: string) => {
-    switch (perfil) {
-      case 'equilibrado': return '⚖️';
-      case 'lordose-acentuada': return '🔽';
-      case 'cifose-acentuada': return '🔼';
-      case 'assimetria-leve': return '↔️';
-      default: return '📊';
-    }
-  };
-
-  let mensagem = `*Olá ${dados.nome}! 👋*\n\n`;
-  mensagem += `Agradecemos por usar nosso *Consultor de Cadeiras Cuellar*!\n\n`;
+  // Pega a primeira recomendação (principal)
+  const recomendacaoPrincipal = recomendacoes[0];
   
-  mensagem += `📋 *Seus dados:*\n`;
-  mensagem += `• Nome: ${dados.nome}\n`;
-  mensagem += `• Altura: ${dados.altura}cm\n`;
-  mensagem += `• Peso: ${dados.peso}kg\n`;
-  mensagem += `• Perfil Postural: ${getPerfilEmoji(dados.perfilPostural)} ${dados.perfilPostural.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}\n\n`;
-  
-  mensagem += `🎯 *Cadeiras Recomendadas:*\n\n`;
-  
-  recomendacoes.forEach((rec, index) => {
-    mensagem += `${getPrioridadeEmoji(rec.prioridade)} *${rec.categoria.rotulo}*\n`;
-    mensagem += `📝 ${rec.categoria.descricao}\n`;
-    mensagem += `💡 *Por que recomendamos:* ${rec.motivo}\n`;
-    mensagem += `✨ *Principais recursos:*\n`;
-    
-    rec.categoria.recursos.slice(0, 3).forEach(recurso => {
-      mensagem += `   • ${recurso}\n`;
-    });
-    
-    if (index < recomendacoes.length - 1) {
-      mensagem += `\n`;
-    }
-  });
-  
-  mensagem += `\n🎁 *Próximos passos:*\n`;
-  mensagem += `• Nossa equipe especializada irá preparar uma proposta personalizada\n`;
-  mensagem += `• Preços especiais exclusivos para você\n\n`;
-  
-  mensagem += `🌐 *Conheça mais sobre nossas cadeiras:*\n`;
-  mensagem += `Site: https://www.cuellarmoveis.com.br/cadeira\n\n`;
-  
-  mensagem += `📞 *Contato:*\n`;
-  mensagem += `• Email: comercial@cuellarmoveis.com.br\n`;
-  mensagem += `• Horário: Seg-Sex, 8h às 18h\n\n`;
-  
-  mensagem += `*Cuellar Móveis - Ergonomia que transforma seu trabalho!* 🪑✨`;
+  let mensagem = `Olá ${dados.nome}! 👋\n\n`;
+  mensagem += `Sabemos como é importante ter conforto no dia a dia e com base no seu perfil, nossa recomendação especial é a ${recomendacaoPrincipal.categoria.rotulo}!\n\n`;
+  mensagem += `💡 *Por que é perfeita para você:*\n`;
+  mensagem += `${recomendacaoPrincipal.motivo}\n\n`;
+  mensagem += `📞 *Entre em contato agora para garantir sua oferta:*\n`;
+  mensagem += `Email: comercial@cuellarmoveis.com.br\n`;
+  mensagem += `Site: https://www.cuellarmoveis.com.br\n\n`;
+  mensagem += `*Cuellar Móveis - Transformando seu ambiente de trabalho!* 🪑✨`;
   
   return mensagem;
 };
