@@ -227,7 +227,7 @@ export const Resultado: React.FC<ResultadoProps> = ({ form, onBack, onRestart })
       const cadeiraRecomendada = recomendacoes.find(r => r.prioridade === 'alta') || recomendacoes[0];
       console.log(`📋 Execução ${executionId}: Enviando apenas para a cadeira principal: ${cadeiraRecomendada.categoria.rotulo}`);
       
-      const mensagemCadeira = formatarMensagemCadeiraIndividual(dados, cadeiraRecomendada);
+      const mensagemCadeira = formatarMensagemWhatsApp(dados, [cadeiraRecomendada]);
       console.log(`📤 Enviando mensagem para cadeira: ${cadeiraRecomendada.categoria.rotulo}`);
       console.log(`📞 Telefone: ${dados.telefone}`);
       console.log(`💬 Prévia da mensagem: ${mensagemCadeira.substring(0, 100)}...`);
